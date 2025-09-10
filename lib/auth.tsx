@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setToken(null);
   };
 
-  const authHeader = () => (token ? { Authorization: `Bearer ${token}` } : {});
+  const authHeader = (): Record<string, string> => (token ? { Authorization: `Bearer ${token}` } : {});
 
   const value = useMemo(() => ({ token, login, logout, setToken, authHeader }), [token]);
 
