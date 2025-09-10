@@ -42,7 +42,7 @@ export default function ReportsPage() {
     return 'Done';
   };
 
-  const nextStatus = (s: ReportStatus): ReportStatus | null => {
+  const nextStatus = (s: ReportStatus): 'IN_PROGRESS' | 'FIXED' | null => {
     if (s === 'SUBMITTED') return 'IN_PROGRESS';
     if (s === 'IN_PROGRESS') return 'FIXED';
     return null;
