@@ -14,16 +14,6 @@ const Popup = dynamic(() => import('react-leaflet').then(m => m.Popup), { ssr: f
 
 // Leaflet CSS
 import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-
-// Fix default icon paths in Next.js
-const icon = new L.Icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-});
 
 function toQuery(params: Record<string, string | undefined>) {
   const q = new URLSearchParams();
@@ -46,6 +36,23 @@ export default function ReportsMapPage() {
 
   // Default center (Cairo), adjust as needed
   const center: [number, number] = [30.0444, 31.2357];
+  
+  // Create icon only on client side
+  const [icon, setIcon] = useState<any>(null);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      import('leaflet').then((L) => {
+        const newIcon = new L.Icon({
+          iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+          iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+          shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+        });
+        setIcon(newIcon);
+      });
+    }
+  }, []);
 
   return (
     <RequireAuth>
@@ -69,7 +76,7 @@ export default function ReportsMapPage() {
               attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {(points || []).map((p) => (
+            {icon && (points || []).map((p) => (
               <Marker key={p.id} position={[p.latitude, p.longitude]} icon={icon}>
                 <Popup>
                   <div style={{ minWidth: 240 }}>
